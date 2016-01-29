@@ -7,21 +7,13 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.axis.DateTickUnit;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.TickUnit;
-import org.jfree.chart.axis.TickUnits;
-import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.plot.PlotOrientation;
 import org.joda.time.Period;
 import org.junit.Test;
 
 import de.energienetz.hupe.CsvDataReader;
 import de.energienetz.hupe.CsvFile;
+import de.energienetz.hupe.HupeChartBuilder;
 import de.energienetz.hupe.HupeDateFilter;
 
 public class CsvReading {
@@ -42,24 +34,8 @@ public class CsvReading {
 		final CsvDataReader reader = new CsvDataReader(new File("src/test/resources/messhistorie-0111A7370D79.csv.zip"));
 		final CsvFile csvFile = reader.getFileList().get(0);
 		new HupeDateFilter(Period.days(3)).execute(csvFile);
-		final byte[] data = ChartUtilities.encodeAsPNG(buildChart(csvFile).createBufferedImage(1024, 768));
+		final byte[] data = ChartUtilities.encodeAsPNG(HupeChartBuilder.buildChart(csvFile).createBufferedImage(1024, 768));
 		FileUtils.writeByteArrayToFile(new File("target/render.png"), data);
 		Desktop.getDesktop().open(new File("target/render.png"));
-	}
-
-	private JFreeChart buildChart(final CsvFile csvFile) {
-		final JFreeChart chart = ChartFactory.createXYLineChart(csvFile.getFileName(), "Zeit", //
-				"", // y axis label
-				csvFile.createDataSet(), // data
-				PlotOrientation.VERTICAL, true, // include legend
-				true, // tooltips
-				false // urls
-		);
-		final NumberAxis yAxis = new NumberAxis("Temperatur (C°)");
-		yAxis.setAutoRangeIncludesZero(false);
-		chart.getXYPlot().setDomainAxis(new DateAxis("Uhrzeit"));
-		chart.getXYPlot().setRangeAxis(yAxis);
-
-		return chart;
 	}
 }

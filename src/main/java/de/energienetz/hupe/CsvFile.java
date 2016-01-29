@@ -1,16 +1,13 @@
 package de.energienetz.hupe;
 
-import java.security.KeyStore.Entry;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jfree.data.time.Minute;
-import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,12 +17,10 @@ public class CsvFile {
 	private static Logger logger = LoggerFactory.getLogger(CsvFile.class);
 
 	private final String fileName;
-	private final List<String> content;
 	private List<TemperatureEntry> entries;
 
 	public CsvFile(final List<String> content, final String fileName) {
 		this.fileName = fileName;
-		this.content = content;
 		this.entries = new ArrayList<TemperatureEntry>();
 		content.forEach(line -> parseAndAddCsvLine(line));
 	}
@@ -59,7 +54,19 @@ public class CsvFile {
 		return dataset;
 	}
 
-	public void setEntries(final List<TemperatureEntry> l) {
-		this.entries = l;
+	public void setEntries(final List<TemperatureEntry> list) {
+		this.entries = list;
+	}
+
+	public TimeSeries getSensor1Series() {
+		final TimeSeries series = new TimeSeries(getFileName() + " Sensor 1");
+		entries.forEach(entry -> series.addOrUpdate(new Minute(entry.getDate()), entry.getTemp1()));
+		return series;
+	}
+
+	public TimeSeries getSensor2Series() {
+		final TimeSeries series = new TimeSeries(getFileName() + " Sensor 2");
+		entries.forEach(entry -> series.addOrUpdate(new Minute(entry.getDate()), entry.getTemp2()));
+		return series;
 	}
 }
