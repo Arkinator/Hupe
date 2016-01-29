@@ -1,33 +1,43 @@
 package de.energienetz.hupe;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jfree.data.time.Minute;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.xy.XYDataset;
+import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CsvFile {
 	private static final String csvSplitCharacter = ";";
+	// 30.11.2015 02:08:12
+	// Mon Nov 30 02:08:12 CET 2015
+	private static final String dateParsePattern = "dd.MM.yyyy hh:mm:ss";
 
 	private static Logger logger = LoggerFactory.getLogger(CsvFile.class);
 
-	private final String fileName;
-	private List<TemperatureEntry> entries;
+	private String fileName;
+	private final List<HupeDataSeries> series;
+
+	private boolean visible;
 
 	public CsvFile(final List<String> content, final String fileName) {
 		this.fileName = fileName;
-		this.entries = new ArrayList<TemperatureEntry>();
+		this.series = new ArrayList<HupeDataSeries>();
+		series.add(new HupeDataSeries(fileName + " Sensor 1"));
+		series.add(new HupeDataSeries(fileName + " Sensor 2"));
 		content.forEach(line -> parseAndAddCsvLine(line));
 	}
 
 	private void parseAndAddCsvLine(final String line) {
 		try {
-			entries.add(new TemperatureEntry(line.split(csvSplitCharacter)));
+			final String[] parts = line.split(csvSplitCharacter);
+			final Date date = DateUtils.parseDate(parts[0], dateParsePattern);
+			final double temp1 = Double.parseDouble(parts[1].replace(",", "."));
+			final double temp2 = Double.parseDouble(parts[2].replace(",", "."));
+			series.get(0).addNewEntry(date, temp1);
+			series.get(1).addNewEntry(date, temp2);
 		} catch (final Exception e) {
 			logger.trace("Skipping line '" + line + "'." + ExceptionUtils.getStackTrace(e));
 		}
@@ -37,36 +47,27 @@ public class CsvFile {
 		return fileName;
 	}
 
-	public List<TemperatureEntry> getEntries() {
-		return entries;
-	}
-
-	public XYDataset createDataSet() {
-		final TimeSeries sensor1 = new TimeSeries(getFileName() + " Sensor 1");
-		entries.forEach(entry -> sensor1.add(new Minute(entry.getDate()), entry.getTemp1()));
-
-		final TimeSeries sensor2 = new TimeSeries(getFileName() + " Sensor 2");
-		entries.forEach(entry -> sensor2.add(new Minute(entry.getDate()), entry.getTemp2()));
-
-		final TimeSeriesCollection dataset = new TimeSeriesCollection();
-		dataset.addSeries(sensor1);
-		dataset.addSeries(sensor2);
-		return dataset;
-	}
-
-	public void setEntries(final List<TemperatureEntry> list) {
-		this.entries = list;
-	}
-
-	public TimeSeries getSensor1Series() {
-		final TimeSeries series = new TimeSeries(getFileName() + " Sensor 1");
-		entries.forEach(entry -> series.addOrUpdate(new Minute(entry.getDate()), entry.getTemp1()));
+	public List<HupeDataSeries> getAllSeries() {
 		return series;
 	}
 
-	public TimeSeries getSensor2Series() {
-		final TimeSeries series = new TimeSeries(getFileName() + " Sensor 2");
-		entries.forEach(entry -> series.addOrUpdate(new Minute(entry.getDate()), entry.getTemp2()));
-		return series;
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(final boolean value) {
+		this.visible = value;
+	}
+
+	public void setFileName(final String value) {
+		this.fileName = value;
+	}
+
+	public class DateParseException extends RuntimeException {
+		private static final long serialVersionUID = 2698583506459715717L;
+
+		public DateParseException(final Exception e) {
+			super(e);
+		}
 	}
 }
