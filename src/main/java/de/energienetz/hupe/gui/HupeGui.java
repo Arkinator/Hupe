@@ -6,7 +6,6 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,17 +19,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
-import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.border.BevelBorder;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.filechooser.FileFilter;
 
-import org.apache.commons.io.FileUtils;
 import org.jdesktop.swingx.JXDatePicker;
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.axis.DateTickUnit;
+import org.jfree.chart.axis.DateTickUnitType;
 import org.joda.time.Period;
 
 import de.energienetz.hupe.CsvDataReader;
@@ -39,13 +36,17 @@ import de.energienetz.hupe.HupeDataSeries;
 import de.energienetz.hupe.HupeDateFilter;
 import de.energienetz.hupe.HupeFileType;
 
-public class HupeGui extends JFrame implements ActionListener {
+public class HupeGui extends JFrame implements ActionListener, ChangeListener {
 	private static final long serialVersionUID = 1964136476013026396L;
 	private static final String showOpenFileDialogAction = "showOpenFileDialog";
 	private static final String clearDataAction = "clearData";
 	private static final String editDataAction = "editData";
 	private static final String checkTimeFilterAction = "checkTimeFilter";
 	private static final String saveFileAction = "saveFile";
+
+	private static final String minuteTickLabel = "Minuten";
+	private static final String hourTickLabel = "Stunden";
+	private static final String dayTickLabel = "Tage";
 	private JPanel mainPanel;
 	private JPanel actionPanel;
 	private JPanel viewPanel;
@@ -65,6 +66,8 @@ public class HupeGui extends JFrame implements ActionListener {
 	private JComboBox<HupeFileType> fileTypeComboBox;
 	private JSpinner widthImageSpinner;
 	private JSpinner heightImageSpinner;
+	private JSpinner tickUnitCounter;
+	private JComboBox<String> tickUnitComboBox;
 
 	public HupeGui() {
 		super("HUPE - HeizUngs PlottEr GUI " + HupeGui.class.getPackage().getImplementationVersion());
@@ -145,6 +148,14 @@ public class HupeGui extends JFrame implements ActionListener {
 		saveButton.addActionListener(this);
 		saveButton.setActionCommand(saveFileAction);
 
+		tickUnitCounter = new JSpinner(new SpinnerNumberModel(1, 1, 1000, 1));
+		tickUnitComboBox = new JComboBox<>();
+		tickUnitComboBox.addItem(minuteTickLabel);
+		tickUnitComboBox.addItem(hourTickLabel);
+		tickUnitComboBox.addItem(dayTickLabel);
+		tickUnitComboBox.addActionListener(this);
+		tickUnitCounter.addChangeListener(this);
+
 		heightImageSpinner = new JSpinner(new SpinnerNumberModel(768, 0, 20000, 10));
 		widthImageSpinner = new JSpinner(new SpinnerNumberModel(1024, 0, 20000, 10));
 		final JLabel sizeLabel = new JLabel("x");
@@ -152,6 +163,8 @@ public class HupeGui extends JFrame implements ActionListener {
 		line1.setMaximumSize(new Dimension(1000, 5));
 		final JSeparator line2 = new JSeparator(JSeparator.HORIZONTAL);
 		line2.setMaximumSize(new Dimension(1000, 5));
+		final JSeparator line3 = new JSeparator(JSeparator.HORIZONTAL);
+		line3.setMaximumSize(new Dimension(1000, 5));
 
 		layout.setAutoCreateGaps(true);
 		layout.setVerticalGroup(layout.createSequentialGroup()//
@@ -171,6 +184,11 @@ public class HupeGui extends JFrame implements ActionListener {
 						.addComponent(datePickerUntil))//
 				.addGap(10) //
 				.addComponent(line2) //
+				.addGroup(layout.createParallelGroup() //
+						.addComponent(tickUnitCounter) //
+						.addComponent(tickUnitComboBox)) //
+				.addGap(10) //
+				.addComponent(line3) //
 				.addGroup(layout.createParallelGroup() //
 						.addComponent(saveLabel) //
 						.addComponent(fileTypeComboBox))
@@ -194,6 +212,10 @@ public class HupeGui extends JFrame implements ActionListener {
 						.addComponent(untilLabel) //
 						.addComponent(datePickerUntil)) //
 				.addComponent(line2) //
+				.addGroup(layout.createSequentialGroup() //
+						.addComponent(tickUnitCounter) //
+						.addComponent(tickUnitComboBox)) //
+				.addComponent(line3) //
 				.addGroup(layout.createSequentialGroup()//
 						.addComponent(saveLabel) //
 						.addComponent(fileTypeComboBox)) //
@@ -234,7 +256,30 @@ public class HupeGui extends JFrame implements ActionListener {
 			hupeDateFilter.setMinimum(datePickerFrom.getDate());
 			hupeDateFilter.setMaximum(datePickerUntil.getDate());
 			chartBuilder.update();
+		} else if ((e.getSource() == tickUnitComboBox) || (e.getSource() == tickUnitCounter)) {
+			updateTickUnits();
+			chartBuilder.update();
 		}
+	}
+
+	private void updateTickUnits() {
+		final int count = (Integer) tickUnitCounter.getValue();
+		DateTickUnitType type = null;
+		switch (tickUnitComboBox.getSelectedItem().toString()) {
+		case minuteTickLabel:
+			type = DateTickUnitType.MINUTE;
+			break;
+		case hourTickLabel:
+			type = DateTickUnitType.HOUR;
+			break;
+		case dayTickLabel:
+			type = DateTickUnitType.DAY;
+			break;
+		default:
+			type = DateTickUnitType.DAY;
+			break;
+		}
+		chartBuilder.setTickUnit(new DateTickUnit(type, count));
 	}
 
 	private void initiateSaveFileSequence() {
@@ -277,5 +322,11 @@ public class HupeGui extends JFrame implements ActionListener {
 
 	public HupeChartBuilder getChartBuilder() {
 		return chartBuilder;
+	}
+
+	@Override
+	public void stateChanged(final ChangeEvent e) {
+		updateTickUnits();
+		chartBuilder.update();
 	}
 }
