@@ -11,9 +11,11 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -68,14 +70,31 @@ public class EditDataDialog extends JFrame implements ActionListener {
 		tablePanel.add(scrollPane, BorderLayout.CENTER);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void setUpTableColumnEditors(final JTable table) {
 		final JComboBox<HupeColor> colorComboBox = new JComboBox<>();
 		for (final HupeColor color : HupeColor.values()) {
 			colorComboBox.addItem(color);
 		}
+		colorComboBox.setRenderer(new BasicComboBoxRenderer() {
+			private static final long serialVersionUID = 5504753277993405519L;
+
+			@SuppressWarnings("rawtypes")
+			@Override
+			public Component getListCellRendererComponent(final JList list, final Object value, final int index, final boolean isSelected, final boolean cellHasFocus) {
+				final JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				if (value != null) {
+					final HupeColor color = (HupeColor) value;
+					label.setBackground(color.getAwtColor());
+					label.setText(color.getName());
+				}
+				return label;
+			}
+		});
 		final DefaultCellEditor colorEditor = new DefaultCellEditor(colorComboBox);
 		table.getColumnModel().getColumn(1).setCellEditor(colorEditor);
 		final TableCellRenderer colorRenderer = new DefaultTableCellRenderer() {
+			private static final long serialVersionUID = 13284903859340285L;
 
 			@Override
 			public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected, final boolean hasFocus, final int row,
@@ -84,7 +103,7 @@ public class EditDataDialog extends JFrame implements ActionListener {
 				if (value != null) {
 					result.setBackground(((HupeColor) value).getAwtColor());
 					// result.setText(value.toString());
-					result.setText(((HupeColor) value).name());
+					result.setText(((HupeColor) value).getName());
 				} else {
 					result.setText("<standard>");
 					result.setBackground(Color.lightGray);
@@ -98,6 +117,7 @@ public class EditDataDialog extends JFrame implements ActionListener {
 	private void setUpTableColumnWidth(final JTable table) {
 		table.getColumnModel().getColumn(1).setMaxWidth(200);
 		table.getColumnModel().getColumn(2).setMaxWidth(50);
+		table.getColumnModel().getColumn(3).setMaxWidth(50);
 	}
 
 	@Override

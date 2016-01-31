@@ -18,12 +18,10 @@ import org.slf4j.LoggerFactory;
 public class CsvDataReader {
 	private static Logger logger = LoggerFactory.getLogger(CsvDataReader.class);
 
-	private final String inputFilename;
 	private final List<CsvFile> fileList;
 
 	public CsvDataReader(final File file) {
 		fileList = new ArrayList<>();
-		inputFilename = file.getAbsolutePath();
 		tryToReadAsZipFile(file);
 		tryToReadAsCsvFile(file);
 	}

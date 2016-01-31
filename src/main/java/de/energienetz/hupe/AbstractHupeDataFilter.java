@@ -3,8 +3,6 @@ package de.energienetz.hupe;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.jfree.data.time.TimeSeries;
-
 public abstract class AbstractHupeDataFilter {
 	private boolean active = true;
 
