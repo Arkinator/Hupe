@@ -1,6 +1,7 @@
 package de.energienetz.hupe;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -8,9 +9,9 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,15 @@ public class CsvDataReader {
 		fileList = new ArrayList<>();
 		inputFilename = file.getAbsolutePath();
 		tryToReadAsZipFile(file);
+		tryToReadAsCsvFile(file);
+	}
+
+	private void tryToReadAsCsvFile(final File file) {
+		try (InputStream inStream = new FileInputStream(file)) {
+			tryToReadCsvFile(inStream, file.getName());
+		} catch (final IOException e) {
+			Log.warn(e.getMessage());
+		}
 	}
 
 	private void tryToReadAsZipFile(final File file) {
@@ -31,9 +41,8 @@ public class CsvDataReader {
 			final ZipFile zipFile = new ZipFile(file);
 			zipFile.stream().forEach(entry -> tryToReadZipEntry(zipFile, entry));
 			zipFile.close();
-		} catch (final IOException e) {
-			logger.error("Fehler beim Einlesen der Zip-Datei '" + file + "':\n" + ExceptionUtils.getStackTrace(e));
-			throw new InputReadingException(e);
+		} catch (final Exception e) {
+			logger.warn("Fehler beim Einlesen der Zip-Datei '" + file + "':\n" + ExceptionUtils.getStackTrace(e));
 		}
 	}
 
@@ -41,7 +50,6 @@ public class CsvDataReader {
 		try {
 			tryToReadCsvFile(zipFile.getInputStream(entry), entry.getName());
 		} catch (final IOException e) {
-			logger.error("Fehler beim Einlesen des Eintrags '" + entry + "' einer Zip-Datei:\n" + ExceptionUtils.getStackTrace(e));
 			throw new InputReadingException(e);
 		}
 	}

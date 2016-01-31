@@ -1,11 +1,12 @@
 package de.energienetz.hupe;
 
-import java.nio.file.DirectoryStream.Filter;
+import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.data.time.Minute;
 import org.jfree.data.time.TimeSeries;
 
@@ -13,6 +14,7 @@ public class HupeDataSeries {
 	private String seriesName;
 	private boolean visible = true;
 	private List<TemperatureEntry> entries;
+	private HupeColor color = null;
 
 	public HupeDataSeries(final String seriesName) {
 		this.seriesName = seriesName;
@@ -63,5 +65,19 @@ public class HupeDataSeries {
 
 	public void setEntries(final List<TemperatureEntry> l) {
 		this.entries = l;
+	}
+
+	public HupeColor getColor() {
+		return color;
+	}
+
+	public void setColor(final HupeColor v) {
+		this.color = v;
+	}
+
+	public void decoratePlot(final int index, final XYItemRenderer xyItemRenderer) {
+		if (color != null) {
+			xyItemRenderer.setSeriesPaint(index, this.color.getAwtColor());
+		}
 	}
 }

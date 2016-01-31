@@ -8,7 +8,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.time.TimeSeries;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
@@ -48,6 +48,14 @@ public class HupeChartBuilder {
 
 	public void update() {
 		chart.getXYPlot().setDataset(getUpdatedDataSet());
+		decoratePlot((XYPlot) chart.getPlot());
+	}
+
+	private void decoratePlot(final XYPlot plot) {
+		int i = 0;
+		for (final HupeDataSeries series : dataSeries) {
+			series.decoratePlot(i++, plot.getRenderer());
+		}
 	}
 
 	public void clearData() {
