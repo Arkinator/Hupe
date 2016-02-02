@@ -1,7 +1,5 @@
 package de.energienetz.hupe;
 
-import java.util.Date;
-
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 
@@ -44,11 +42,11 @@ public class HupeDateFilter extends AbstractHupeDataFilter {
 		return new DateTime(file.getEntries().get(file.getEntries().size() - 1).getDate());
 	}
 
-	public void setMinimum(final Date date) {
-		minimum = new DateTime(date);
+	public void setMinimum(final DateTime date) {
+		minimum = date;
 	}
 
-	public void setMaximum(final Date date) {
-		maximum = new DateTime(date);
+	public void setMaximum(final DateTime date) {
+		maximum = date;
 	}
 }
