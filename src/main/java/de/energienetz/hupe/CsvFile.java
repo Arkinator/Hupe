@@ -6,10 +6,12 @@ import java.util.List;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CsvFile {
+	private static final String introLineStart = "Messzeitpunkt;Temperatur 1;Temperatur 2";
 	private static final String csvSplitCharacter = ";";
 	// 30.11.2015 02:08:12
 	// Mon Nov 30 02:08:12 CET 2015
@@ -23,6 +25,8 @@ public class CsvFile {
 	private boolean visible;
 
 	public CsvFile(final List<String> content, final String fileName) {
+		Assert.assertTrue("Unzulässiges Dateiformat", content.size() >= 1);
+		Assert.assertTrue("Unzulässiges Dateiformat: " + content.get(0), content.get(0).startsWith(introLineStart));
 		this.fileName = fileName;
 		this.series = new ArrayList<HupeDataSeries>();
 		series.add(new HupeDataSeries(fileName + " Sensor 1"));

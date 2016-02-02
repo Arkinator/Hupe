@@ -10,6 +10,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jfree.util.Log;
 import org.slf4j.Logger;
@@ -22,31 +23,34 @@ public class CsvDataReader {
 
 	public CsvDataReader(final File file) {
 		fileList = new ArrayList<>();
-		tryToReadAsZipFile(file);
-		tryToReadAsCsvFile(file);
+		if (!tryToReadAsZipFile(file)) {
+			tryToReadAsCsvFile(file);
+		}
 	}
 
 	private void tryToReadAsCsvFile(final File file) {
-		try (InputStream inStream = new FileInputStream(file)) {
+		try (InputStream inStream = new BOMInputStream(new FileInputStream(file))) {
 			tryToReadCsvFile(inStream, file.getName());
 		} catch (final IOException e) {
 			Log.warn(e.getMessage());
 		}
 	}
 
-	private void tryToReadAsZipFile(final File file) {
+	private boolean tryToReadAsZipFile(final File file) {
 		try {
 			final ZipFile zipFile = new ZipFile(file);
 			zipFile.stream().forEach(entry -> tryToReadZipEntry(zipFile, entry));
 			zipFile.close();
+			return true;
 		} catch (final Exception e) {
 			logger.warn("Fehler beim Einlesen der Zip-Datei '" + file + "':\n" + ExceptionUtils.getStackTrace(e));
 		}
+		return false;
 	}
 
 	private void tryToReadZipEntry(final ZipFile zipFile, final ZipEntry entry) {
 		try {
-			tryToReadCsvFile(zipFile.getInputStream(entry), entry.getName());
+			tryToReadCsvFile(new BOMInputStream(zipFile.getInputStream(entry)), entry.getName());
 		} catch (final IOException e) {
 			throw new InputReadingException(e);
 		}
