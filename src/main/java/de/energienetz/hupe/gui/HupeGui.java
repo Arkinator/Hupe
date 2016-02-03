@@ -41,6 +41,16 @@ import de.energienetz.hupe.HupeDateFilter;
 import de.energienetz.hupe.HupeFileType;
 
 public class HupeGui extends JFrame implements ActionListener, ChangeListener {
+	private static final String saveImageLabel = "Speichern...";
+	private static final String saveAsLabel = "Speichern als:";
+	private static final String untilFilterLabel = "bis";
+	private static final String fromFilterLabel = "von";
+	private static final String filterTimesLabel = "Zeiten filtern";
+	private static final String manageLabel = "Daten verwalten...";
+	private static final String clearDataLabel = "Geladene Daten verwerfen";
+	private static final String addDataLabel = "Neue Daten hinzufÃ¼gen...";
+	private static final String editDataLabel = "Daten des Diagramms verwalten";
+	private static final String guiTitle = "HUPE - HeizUngs PlottEr GUI ";
 	private static final long serialVersionUID = 1964136476013026396L;
 	private static final String showOpenFileDialogAction = "showOpenFileDialog";
 	private static final String clearDataAction = "clearData";
@@ -77,7 +87,7 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener {
 	private JSpinner timePickerUntil;
 
 	public HupeGui() {
-		super("HUPE - HeizUngs PlottEr GUI " + HupeGui.class.getPackage().getImplementationVersion());
+		super(guiTitle + HupeGui.class.getPackage().getImplementationVersion());
 		series = new ArrayList<>();
 
 		hupeDateFilter = new HupeDateFilter(Period.days(3));
@@ -123,25 +133,25 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener {
 		final GroupLayout layout = new GroupLayout(actionPanel);
 		actionPanel.setLayout(layout);
 
-		final JLabel dataLabel = new JLabel("Daten des Diagramms verwalten");
-		openFileButton = new JButton("Neue Daten hinzufügen...");
+		final JLabel dataLabel = new JLabel(editDataLabel);
+		openFileButton = new JButton(addDataLabel);
 		openFileButton.addActionListener(this);
 		openFileButton.setActionCommand(showOpenFileDialogAction);
 
-		clearDiagrammButton = new JButton("Geladene Daten verwerfen");
+		clearDiagrammButton = new JButton(clearDataLabel);
 		clearDiagrammButton.addActionListener(this);
 		clearDiagrammButton.setActionCommand(clearDataAction);
 
-		editDataButton = new JButton("Daten verwalten...");
+		editDataButton = new JButton(manageLabel);
 		editDataButton.addActionListener(this);
 		editDataButton.setActionCommand(editDataAction);
 
-		filterCheckBox = new JCheckBox("Zeiten filtern");
+		filterCheckBox = new JCheckBox(filterTimesLabel);
 		filterCheckBox.setSelected(false);
 		filterCheckBox.addActionListener(this);
 		filterCheckBox.setActionCommand(checkTimeFilterAction);
-		final JLabel fromLabel = new JLabel("von");
-		final JLabel untilLabel = new JLabel("bis");
+		final JLabel fromLabel = new JLabel(fromFilterLabel);
+		final JLabel untilLabel = new JLabel(untilFilterLabel);
 		datePickerFrom = new JXDatePicker();
 		datePickerUntil = new JXDatePicker();
 		datePickerFrom.addActionListener(this);
@@ -157,11 +167,11 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener {
 		timePickerFrom.addChangeListener(this);
 		timePickerUntil.addChangeListener(this);
 
-		final JLabel saveLabel = new JLabel("Speichern als:");
+		final JLabel saveLabel = new JLabel(saveAsLabel);
 		fileTypeComboBox = new JComboBox<>(HupeFileType.values());
 		fileTypeComboBox.setSelectedItem(HupeFileType.PNG);
 		fileTypeComboBox.setEditable(false);
-		final JButton saveButton = new JButton("Speichern...");
+		final JButton saveButton = new JButton(saveImageLabel);
 		saveButton.addActionListener(this);
 		saveButton.setActionCommand(saveFileAction);
 

@@ -25,6 +25,7 @@ import de.energienetz.hupe.HupeColor;
 public class EditDataDialog extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 9217860900420979997L;
 	private static final String okAction = "okAction";
+	private static final String[] defaultNames = { "Vorlauf", "Rücklauf", "Heizung", "Raumtemperatur", "Warmwasser" };
 	private final HupeGui mainGui;
 
 	public EditDataDialog(final HupeGui mainGui) {
@@ -70,8 +71,46 @@ public class EditDataDialog extends JFrame implements ActionListener {
 		tablePanel.add(scrollPane, BorderLayout.CENTER);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void setUpTableColumnEditors(final JTable table) {
+		setColorEditor(table);
+		setCellRenderer(table);
+		setNameEditor(table);
+	}
+
+	private void setNameEditor(final JTable table) {
+		final JComboBox<String> editComboBox = new JComboBox<>();
+		editComboBox.setEditable(true);
+		for (final String name : defaultNames) {
+			editComboBox.addItem(name);
+		}
+		final DefaultCellEditor colorEditor = new DefaultCellEditor(editComboBox);
+		table.getColumnModel().getColumn(0).setCellEditor(colorEditor);
+	}
+
+	private void setCellRenderer(final JTable table) {
+		final TableCellRenderer colorRenderer = new DefaultTableCellRenderer() {
+			private static final long serialVersionUID = 13284903859340285L;
+
+			@Override
+			public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected, final boolean hasFocus, final int row,
+					final int column) {
+				final JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+				if (value != null) {
+					result.setBackground(((HupeColor) value).getAwtColor());
+					// result.setText(value.toString());
+					result.setText(((HupeColor) value).getName());
+				} else {
+					result.setText("<standard>");
+					result.setBackground(Color.lightGray);
+				}
+				return result;
+			}
+		};
+		table.getColumnModel().getColumn(1).setCellRenderer(colorRenderer);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void setColorEditor(final JTable table) {
 		final JComboBox<HupeColor> colorComboBox = new JComboBox<>();
 		for (final HupeColor color : HupeColor.values()) {
 			colorComboBox.addItem(color);
@@ -93,25 +132,6 @@ public class EditDataDialog extends JFrame implements ActionListener {
 		});
 		final DefaultCellEditor colorEditor = new DefaultCellEditor(colorComboBox);
 		table.getColumnModel().getColumn(1).setCellEditor(colorEditor);
-		final TableCellRenderer colorRenderer = new DefaultTableCellRenderer() {
-			private static final long serialVersionUID = 13284903859340285L;
-
-			@Override
-			public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected, final boolean hasFocus, final int row,
-					final int column) {
-				final JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-				if (value != null) {
-					result.setBackground(((HupeColor) value).getAwtColor());
-					// result.setText(value.toString());
-					result.setText(((HupeColor) value).getName());
-				} else {
-					result.setText("<standard>");
-					result.setBackground(Color.lightGray);
-				}
-				return result;
-			}
-		};
-		table.getColumnModel().getColumn(1).setCellRenderer(colorRenderer);
 	}
 
 	private void setUpTableColumnWidth(final JTable table) {

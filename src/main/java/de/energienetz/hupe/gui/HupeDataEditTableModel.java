@@ -11,7 +11,7 @@ import de.energienetz.hupe.HupeDataSeries;
 public class HupeDataEditTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 9176445957680423004L;
 
-	private final String[] columnNames = { "Name", "Farbe", "Strichst‰rke", "Sichtbar?" };
+	private final String[] columnNames = { "Name", "Farbe", "Strichst√§rke", "Sichtbar?" };
 	private final Class<?>[] columnClasses = { String.class, HupeColor.class, Double.class, Boolean.class };
 	private final List<HupeDataSeries> dataSeries;
 	private final HupeChartBuilder builder;
