@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +21,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
@@ -39,7 +42,7 @@ import de.energienetz.hupe.HupeDataSeries;
 import de.energienetz.hupe.HupeDateFilter;
 import de.energienetz.hupe.HupeFileType;
 
-public class HupeGui extends JFrame implements ActionListener, ChangeListener {
+public class HupeGui extends JFrame implements ActionListener, ChangeListener, KeyListener {
 	private static final String saveImageLabel = "Speichern...";
 	private static final String saveAsLabel = "Speichern als:";
 	private static final String untilFilterLabel = "bis";
@@ -56,10 +59,12 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener {
 	private static final String editDataAction = "editData";
 	private static final String checkTimeFilterAction = "checkTimeFilter";
 	private static final String saveFileAction = "saveFile";
+	private static final String changeDiagramTitleAction = "changeDiagramAction";
 
 	private static final String minuteTickLabel = "Minuten";
 	private static final String hourTickLabel = "Stunden";
 	private static final String dayTickLabel = "Tage";
+	private static final String titleLabelText = "Überschrift wählen";
 	private JPanel mainPanel;
 	private JPanel actionPanel;
 	private JPanel viewPanel;
@@ -83,6 +88,7 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener {
 	private JComboBox<String> tickUnitComboBox;
 	private JSpinner timePickerFrom;
 	private JSpinner timePickerUntil;
+	private JTextField diagramTitelField;
 
 	public HupeGui() {
 		super(guiTitle + HupeGui.class.getPackage().getImplementationVersion());
@@ -165,6 +171,12 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener {
 		timePickerFrom.addChangeListener(this);
 		timePickerUntil.addChangeListener(this);
 
+		final JLabel titleLabel = new JLabel(titleLabelText);
+		diagramTitelField = new JTextField();
+		diagramTitelField.setText(HupeChartBuilder.initialDiagramTitle);
+		diagramTitelField.setActionCommand(changeDiagramTitleAction);
+		diagramTitelField.addKeyListener(this);
+
 		final JLabel saveLabel = new JLabel(saveAsLabel);
 		fileTypeComboBox = new JComboBox<>(HupeFileType.values());
 		fileTypeComboBox.setSelectedItem(HupeFileType.PNG);
@@ -191,6 +203,8 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener {
 		line2.setMaximumSize(new Dimension(1000, 5));
 		final JSeparator line3 = new JSeparator(JSeparator.HORIZONTAL);
 		line3.setMaximumSize(new Dimension(1000, 5));
+		final JSeparator line4 = new JSeparator(JSeparator.HORIZONTAL);
+		line1.setMaximumSize(new Dimension(1000, 5));
 
 		layout.setAutoCreateGaps(true);
 		layout.setVerticalGroup(layout.createSequentialGroup()//
@@ -217,6 +231,10 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener {
 						.addComponent(tickUnitComboBox)) //
 				.addGap(10) //
 				.addComponent(line3) //
+				.addGap(10) //
+				.addComponent(titleLabel) //
+				.addComponent(diagramTitelField) //
+				.addComponent(line4) //
 				.addGroup(layout.createParallelGroup() //
 						.addComponent(saveLabel) //
 						.addComponent(fileTypeComboBox))
@@ -246,6 +264,9 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener {
 						.addComponent(tickUnitCounter) //
 						.addComponent(tickUnitComboBox)) //
 				.addComponent(line3) //
+				.addComponent(titleLabel) //
+				.addComponent(diagramTitelField) //
+				.addComponent(line4) //
 				.addGroup(layout.createSequentialGroup()//
 						.addComponent(saveLabel) //
 						.addComponent(fileTypeComboBox)) //
@@ -287,6 +308,11 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener {
 			updateTickUnits();
 			chartBuilder.update();
 		}
+	}
+
+	private void updateDiagramTitle() {
+		chartBuilder.setTitle(diagramTitelField.getText());
+		chartBuilder.update();
 	}
 
 	private void changeFilterValues() {
@@ -368,5 +394,22 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener {
 		updateTickUnits();
 		changeFilterValues();
 		chartBuilder.update();
+	}
+
+	@Override
+	public void keyTyped(final KeyEvent e) {
+		javax.swing.SwingUtilities.invokeLater(() -> updateDiagramTitle());
+	}
+
+	@Override
+	public void keyPressed(final KeyEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void keyReleased(final KeyEvent e) {
+		// TODO Auto-generated method stub
+
 	}
 }

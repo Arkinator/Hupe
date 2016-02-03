@@ -25,7 +25,8 @@ import de.energienetz.hupe.HupeColor;
 public class EditDataDialog extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 9217860900420979997L;
 	private static final String okAction = "okAction";
-	private static final String[] defaultNames = { "Vorlauf", "Rücklauf", "Heizung", "Raumtemperatur", "Warmwasser", "<anderes>" };
+	private static final String[] defaultNames = { "Vorlauf", "Rücklauf", "Raumtemperatur", "Warmwasser", "Wohnraum", "Heizkörper", //
+			"Kollektor Vorlauf", "Kollektor Rücklauf", "Speicher oben", "Speicher mitte", "Speicher unten", "<anderes>" };
 	private final HupeGui mainGui;
 
 	public EditDataDialog(final HupeGui mainGui) {

@@ -17,12 +17,15 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 
 public class HupeChartBuilder {
+	public static final String initialDiagramTitle = "Heizungsdiagramm";
+
 	private final List<HupeDataSeries> dataSeries;
 	private final JFreeChart chart;
 	private final List<AbstractHupeDataFilter> dataFilters;
 	private DateTickUnit tickUnit = new DateTickUnit(DateTickUnitType.DAY, 1);
 	private final DateAxis xAxis;
 	private final NumberAxis yAxis;
+	private String title = initialDiagramTitle;
 
 	public HupeChartBuilder(final List<HupeDataSeries> files) {
 		this.dataFilters = new ArrayList<>();
@@ -33,10 +36,11 @@ public class HupeChartBuilder {
 				true, // tooltips
 				false // urls
 		);
-		yAxis = new NumberAxis("Temperatur (C°)");
+		yAxis = new NumberAxis("Temperatur (Cï¿½)");
 		yAxis.setAutoRangeIncludesZero(false);
 		xAxis = new DateAxis("Messzeitpunkt");
 		setTickUnit(getTickUnit());
+		chart.setTitle(title);
 		chart.getXYPlot().setRangeAxis(yAxis);
 		chart.getXYPlot().setDomainAxis(xAxis);
 	}
@@ -71,6 +75,7 @@ public class HupeChartBuilder {
 
 	public void update() {
 		chart.getXYPlot().setDataset(getUpdatedDataSet());
+		chart.setTitle(title);
 		decoratePlot((XYPlot) chart.getPlot());
 	}
 
@@ -88,5 +93,9 @@ public class HupeChartBuilder {
 
 	public void addFilter(final AbstractHupeDataFilter filter) {
 		dataFilters.add(filter);
+	}
+
+	public void setTitle(final String text) {
+		this.title = text;
 	}
 }
