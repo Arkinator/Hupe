@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.GroupLayout;
@@ -57,7 +56,6 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener {
 	private static final String editDataAction = "editData";
 	private static final String checkTimeFilterAction = "checkTimeFilter";
 	private static final String saveFileAction = "saveFile";
-	private static final String changeFilterTimeAction = "changeFilterTime";
 
 	private static final String minuteTickLabel = "Minuten";
 	private static final String hourTickLabel = "Stunden";
@@ -264,7 +262,6 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener {
 		layout.linkSize(SwingConstants.VERTICAL, saveLabel, fileTypeComboBox);
 		layout.linkSize(SwingConstants.VERTICAL, widthImageSpinner, heightImageSpinner, sizeLabel);
 		layout.linkSize(SwingConstants.HORIZONTAL, widthImageSpinner, heightImageSpinner);
-		// layout.linkSize(SwingConstants.VERTICAL, untilLabel, line1);
 		return loadDataPanel;
 	}
 

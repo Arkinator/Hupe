@@ -5,9 +5,9 @@ import java.awt.Color;
 public enum HupeColor {
 	notSet(null, "<standard>"), //
 	red(Color.red, "Rot"), //
-	green(Color.green, "Gr¸n"), //
+	green(Color.green, "Gr√ºn"), //
 	blue(Color.blue, "Blau"), //
-	white(Color.white, "Weiﬂ"), //
+	white(Color.white, "Wei√ü"), //
 	black(Color.black, "Schwarz"), //
 	orange(Color.orange, "Orange"), //
 	yellow(Color.yellow, "Gelb"), //

@@ -25,7 +25,7 @@ import de.energienetz.hupe.HupeColor;
 public class EditDataDialog extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 9217860900420979997L;
 	private static final String okAction = "okAction";
-	private static final String[] defaultNames = { "Vorlauf", "Rücklauf", "Heizung", "Raumtemperatur", "Warmwasser" };
+	private static final String[] defaultNames = { "Vorlauf", "Rücklauf", "Heizung", "Raumtemperatur", "Warmwasser", "<anderes>" };
 	private final HupeGui mainGui;
 
 	public EditDataDialog(final HupeGui mainGui) {
@@ -45,6 +45,7 @@ public class EditDataDialog extends JFrame implements ActionListener {
 		mainPanel.setLayout(new BorderLayout());
 		final JPanel buttonPanel = new JPanel();
 		getContentPane().add(mainPanel);
+		// getContentPane().add(buttonPanel);
 
 		final JButton okButton = new JButton("Ok");
 		okButton.addActionListener(this);
@@ -53,7 +54,7 @@ public class EditDataDialog extends JFrame implements ActionListener {
 		buttonPanel.add(okButton);
 
 		fillTablePanel(mainPanel);
-		// mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+		mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
 		pack();
 		setSize(600, 400);
@@ -135,9 +136,9 @@ public class EditDataDialog extends JFrame implements ActionListener {
 	}
 
 	private void setUpTableColumnWidth(final JTable table) {
-		table.getColumnModel().getColumn(1).setMaxWidth(200);
-		table.getColumnModel().getColumn(2).setMaxWidth(50);
-		table.getColumnModel().getColumn(3).setMaxWidth(50);
+		table.getColumnModel().getColumn(1).setMaxWidth(130);
+		table.getColumnModel().getColumn(2).setMaxWidth(80);
+		table.getColumnModel().getColumn(3).setMaxWidth(80);
 	}
 
 	@Override
