@@ -36,7 +36,7 @@ public class HupeChartBuilder {
 				true, // tooltips
 				false // urls
 		);
-		yAxis = new NumberAxis("Temperatur (C�)");
+		yAxis = new NumberAxis("Temperatur (C°)");
 		yAxis.setAutoRangeIncludesZero(false);
 		xAxis = new DateAxis("Messzeitpunkt");
 		setTickUnit(getTickUnit());
