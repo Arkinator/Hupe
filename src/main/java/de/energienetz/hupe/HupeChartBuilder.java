@@ -102,7 +102,9 @@ public class HupeChartBuilder {
 	private void decoratePlot(final XYPlot plot) {
 		int i = 0;
 		for (final HupeDataSeries series : dataSeries) {
-			series.decoratePlot(i++, plot.getRenderer());
+			if (series.isVisible()) {
+				series.decoratePlot(i++, plot.getRenderer());
+			}
 		}
 	}
 
