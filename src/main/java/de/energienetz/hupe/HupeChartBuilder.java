@@ -1,9 +1,15 @@
 package de.energienetz.hupe;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import javax.imageio.ImageIO;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -15,6 +21,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.ui.Align;
 
 public class HupeChartBuilder {
 	public static final String initialDiagramTitle = "Heizungsdiagramm";
@@ -26,6 +33,8 @@ public class HupeChartBuilder {
 	private final DateAxis xAxis;
 	private final NumberAxis yAxis;
 	private String title = initialDiagramTitle;
+
+	private BufferedImage logo;
 
 	public HupeChartBuilder(final List<HupeDataSeries> files) {
 		this.dataFilters = new ArrayList<>();
@@ -43,6 +52,17 @@ public class HupeChartBuilder {
 		chart.setTitle(title);
 		chart.getXYPlot().setRangeAxis(yAxis);
 		chart.getXYPlot().setDomainAxis(xAxis);
+		loadLogo();
+		chart.getPlot().setBackgroundImage(logo);
+		chart.getPlot().setBackgroundImageAlignment(Align.CENTER);
+		chart.getPlot().setBackgroundImageAlpha(0.2f);
+	}
+
+	private void loadLogo() {
+		try (InputStream imageStream = getClass().getResourceAsStream("/images/bdeLogo.png");) {
+			logo = ImageIO.read(imageStream);
+		} catch (final IOException e) {
+		}
 	}
 
 	public DateTickUnit getTickUnit() {

@@ -25,8 +25,8 @@ public class CsvFile {
 	private boolean visible;
 
 	public CsvFile(final List<String> content, final String fileName) {
-		Assert.assertTrue("Unzul‰ssiges Dateiformat", content.size() >= 1);
-		Assert.assertTrue("Unzul‰ssiges Dateiformat: " + content.get(0), content.get(0).startsWith(introLineStart));
+		Assert.assertTrue("Unzul√§ssiges Dateiformat", content.size() >= 1);
+		Assert.assertTrue("Unzul√§ssiges Dateiformat: " + content.get(0), content.get(0).startsWith(introLineStart));
 		this.fileName = fileName;
 		this.series = new ArrayList<HupeDataSeries>();
 		series.add(new HupeDataSeries(fileName + " Sensor 1"));
