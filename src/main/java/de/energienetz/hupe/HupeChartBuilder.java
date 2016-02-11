@@ -1,10 +1,14 @@
 package de.energienetz.hupe;
 
+import java.awt.Color;
+import java.awt.Paint;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -16,6 +20,7 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.DefaultDrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -55,6 +60,20 @@ public class HupeChartBuilder {
 		chart.getPlot().setBackgroundImage(logo);
 		chart.getPlot().setBackgroundImageAlignment(Align.CENTER);
 		chart.getPlot().setBackgroundImageAlpha(0.2f);
+		filterDefaultColors();
+	}
+
+	private void filterDefaultColors() {
+		final List<Paint> lst = new ArrayList<Paint>();
+		lst.addAll(Arrays.asList(DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE));
+		final Iterator<Paint> it = lst.iterator();
+		while (it.hasNext()) {
+			final Color c = (Color) it.next();
+			if (c.equals(Color.lightGray)) {
+				it.remove();
+				System.out.println("REMOVED");
+			}
+		}
 	}
 
 	private void loadLogo() {
