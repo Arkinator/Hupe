@@ -77,6 +77,7 @@ public class EditDataDialog extends JFrame implements ActionListener {
 		setColorEditor(table);
 		setCellRenderer(table);
 		setNameEditor(table);
+		setCurveWidthEditor(table);
 	}
 
 	private void setNameEditor(final JTable table) {
@@ -87,6 +88,19 @@ public class EditDataDialog extends JFrame implements ActionListener {
 		}
 		final DefaultCellEditor colorEditor = new DefaultCellEditor(editComboBox);
 		table.getColumnModel().getColumn(0).setCellEditor(colorEditor);
+	}
+
+	private void setCurveWidthEditor(final JTable table) {
+		final JComboBox<Double> editComboBox = new JComboBox<>();
+		editComboBox.setEditable(true);
+		editComboBox.addItem(0.5);
+		editComboBox.addItem(1.);
+		editComboBox.addItem(2.);
+		editComboBox.addItem(3.);
+		editComboBox.addItem(5.);
+		editComboBox.addItem(8.);
+		final DefaultCellEditor editor = new DefaultCellEditor(editComboBox);
+		table.getColumnModel().getColumn(2).setCellEditor(editor);
 	}
 
 	private void setCellRenderer(final JTable table) {
