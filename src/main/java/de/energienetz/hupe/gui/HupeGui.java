@@ -179,7 +179,7 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener, K
 
 		final JLabel saveLabel = new JLabel(saveAsLabel);
 		fileTypeComboBox = new JComboBox<>(HupeFileType.values());
-		fileTypeComboBox.setSelectedItem(HupeFileType.PNG);
+		fileTypeComboBox.setSelectedItem(HupeFileType.JPEG);
 		fileTypeComboBox.setEditable(false);
 		final JButton saveButton = new JButton(saveImageLabel);
 		saveButton.addActionListener(this);
