@@ -71,7 +71,6 @@ public class HupeChartBuilder {
 			final Color c = (Color) it.next();
 			if (c.equals(Color.lightGray)) {
 				it.remove();
-				System.out.println("REMOVED");
 			}
 		}
 	}

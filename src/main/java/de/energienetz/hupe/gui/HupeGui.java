@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.GroupLayout;
@@ -34,6 +35,7 @@ import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.joda.time.Period;
 
 import de.energienetz.hupe.CsvDataReader;
@@ -111,6 +113,8 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener, K
 		saveFileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
 
 		initMainWindow();
+
+		updateTickUnits();
 	}
 
 	private void initMainWindow() {
@@ -158,6 +162,8 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener, K
 		final JLabel untilLabel = new JLabel(untilFilterLabel);
 		datePickerFrom = new JXDatePicker();
 		datePickerUntil = new JXDatePicker();
+		datePickerUntil.setDate(new Date());
+		datePickerFrom.setDate(Instant.now().minus(Duration.standardDays(4)).toDate());
 		datePickerFrom.addActionListener(this);
 		datePickerUntil.addActionListener(this);
 		timePickerFrom = new JSpinner(new SpinnerDateModel());
@@ -190,7 +196,8 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener, K
 		tickUnitComboBox.addItem(minuteTickLabel);
 		tickUnitComboBox.addItem(hourTickLabel);
 		tickUnitComboBox.addItem(dayTickLabel);
-		tickUnitComboBox.setSelectedItem(dayTickLabel);
+		tickUnitComboBox.setSelectedItem(hourTickLabel);
+		tickUnitCounter.setValue(4);
 		tickUnitComboBox.addActionListener(this);
 		tickUnitCounter.addChangeListener(this);
 
@@ -303,6 +310,7 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener, K
 		} else if (saveFileAction.equals(e.getActionCommand())) {
 			javax.swing.SwingUtilities.invokeLater(() -> initiateSaveFileSequence());
 		} else if (e.getSource() instanceof JXDatePicker) {
+			filterCheckBox.setSelected(true);
 			changeFilterValues();
 		} else if ((e.getSource() == tickUnitComboBox) || (e.getSource() == tickUnitCounter)) {
 			updateTickUnits();
@@ -322,7 +330,6 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener, K
 		final Duration timeIncrementForUntil = new Duration(timeUntil.withMillisOfDay(0), timeUntil);
 		hupeDateFilter.setMinimum(new DateTime(datePickerFrom.getDate()).plus(timeIncrementForFrom));
 		hupeDateFilter.setMaximum(new DateTime(datePickerUntil.getDate()).plus(timeIncrementForUntil));
-		filterCheckBox.setSelected(true);
 		toggleFilterActive();
 	}
 
@@ -391,6 +398,9 @@ public class HupeGui extends JFrame implements ActionListener, ChangeListener, K
 
 	@Override
 	public void stateChanged(final ChangeEvent e) {
+		if ((e.getSource() == this.timePickerFrom) || (e.getSource() == this.timePickerUntil)) {
+			filterCheckBox.setSelected(true);
+		}
 		updateTickUnits();
 		changeFilterValues();
 		chartBuilder.update();
