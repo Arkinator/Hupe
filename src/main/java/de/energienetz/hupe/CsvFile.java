@@ -15,7 +15,7 @@ public class CsvFile {
 	private static final String csvSplitCharacter = ";";
 	// 30.11.2015 02:08:12
 	// Mon Nov 30 02:08:12 CET 2015
-	private static final String dateParsePattern = "dd.MM.yyyy hh:mm:ss";
+	private static final String dateParsePattern = "dd.MM.yyyy HH:mm:ss";
 
 	private static Logger logger = LoggerFactory.getLogger(CsvFile.class);
 

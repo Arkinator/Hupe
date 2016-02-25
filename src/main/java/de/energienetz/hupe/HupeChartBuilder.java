@@ -20,9 +20,13 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.DateTickUnit;
 import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.DefaultDrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.urls.StandardXYURLGenerator;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.Align;
@@ -43,23 +47,24 @@ public class HupeChartBuilder {
 	public HupeChartBuilder(final List<HupeDataSeries> files) {
 		this.dataFilters = new ArrayList<>();
 		this.dataSeries = files;
-		this.chart = ChartFactory.createXYLineChart("", "", "", //
-				getUpdatedDataSet(), // data
-				PlotOrientation.VERTICAL, true, // include legend
-				true, // tooltips
-				false // urls
-		);
+		loadLogo();
+
 		yAxis = new NumberAxis("Temperatur (C°)");
 		yAxis.setAutoRangeIncludesZero(false);
 		xAxis = new DateAxis("Messzeitpunkt");
+		final XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
+		final XYPlot plot = new XYPlot(getUpdatedDataSet(), xAxis, yAxis, renderer);
+
+		plot.setOrientation(PlotOrientation.VERTICAL);
+
+		chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, true);
 		setTickUnit(getTickUnit());
 		chart.setTitle(title);
 		chart.getXYPlot().setRangeAxis(yAxis);
 		chart.getXYPlot().setDomainAxis(xAxis);
-		loadLogo();
 		chart.getPlot().setBackgroundImage(logo);
-		chart.getPlot().setBackgroundImageAlignment(Align.CENTER);
-		chart.getPlot().setBackgroundImageAlpha(0.2f);
+		chart.getPlot().setBackgroundImageAlignment(Align.BOTTOM_RIGHT);
+		chart.getPlot().setBackgroundImageAlpha(0.4f);
 		filterDefaultColors();
 	}
 
