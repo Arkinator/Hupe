@@ -32,114 +32,123 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.ui.Align;
 
 public class HupeChartBuilder {
-	public static final String initialDiagramTitle = "Heizungsdiagramm";
+    public static final String initialDiagramTitle = "Heizungsdiagramm";
 
-	private final List<HupeDataSeries> dataSeries;
-	private final JFreeChart chart;
-	private final List<AbstractHupeDataFilter> dataFilters;
-	private DateTickUnit tickUnit = new DateTickUnit(DateTickUnitType.DAY, 1);
-	private final DateAxis xAxis;
-	private final NumberAxis yAxis;
-	private String title = initialDiagramTitle;
+    private final List<HupeDataSeries> dataSeries;
+    private final JFreeChart chart;
+    private final List<AbstractHupeDataFilter> dataFilters;
+    private DateTickUnit tickUnit = new DateTickUnit(DateTickUnitType.DAY, 1);
+    private final DateAxis xAxis;
+    private final NumberAxis yAxis;
+    private String title = initialDiagramTitle;
 
-	private BufferedImage logo;
+    private BufferedImage logo;
 
-	public HupeChartBuilder(final List<HupeDataSeries> files) {
-		this.dataFilters = new ArrayList<>();
-		this.dataSeries = files;
-		loadLogo();
+    public HupeChartBuilder(final List<HupeDataSeries> files) {
+        this.dataFilters = new ArrayList<>();
+        this.dataSeries = files;
+        loadLogo();
 
-		yAxis = new NumberAxis("Temperatur (C°)");
-		yAxis.setAutoRangeIncludesZero(false);
-		xAxis = new DateAxis("Messzeitpunkt");
-		final XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
-		final XYPlot plot = new XYPlot(getUpdatedDataSet(), xAxis, yAxis, renderer);
+        yAxis = new NumberAxis("Temperatur (C°)");
+        yAxis.setAutoRangeIncludesZero(false);
+        xAxis = new DateAxis("Messzeitpunkt");
+        final XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
+        final XYPlot plot = new XYPlot(getUpdatedDataSet(), xAxis, yAxis, renderer);
 
-		plot.setOrientation(PlotOrientation.VERTICAL);
+        plot.setOrientation(PlotOrientation.VERTICAL);
 
-		chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, true);
-		setTickUnit(getTickUnit());
-		chart.setTitle(title);
-		chart.getXYPlot().setRangeAxis(yAxis);
-		chart.getXYPlot().setDomainAxis(xAxis);
-		chart.getPlot().setBackgroundImage(logo);
-		chart.getPlot().setBackgroundImageAlignment(Align.BOTTOM_RIGHT);
-		chart.getPlot().setBackgroundImageAlpha(0.4f);
-		filterDefaultColors();
-	}
+        chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, true);
+        setTickUnit(getTickUnit());
+        chart.setTitle(title);
+        chart.getXYPlot().setRangeAxis(yAxis);
+        chart.getXYPlot().setDomainAxis(xAxis);
+        chart.getPlot().setBackgroundImage(logo);
+        chart.getPlot().setBackgroundImageAlignment(Align.BOTTOM_RIGHT);
+        chart.getPlot().setBackgroundImageAlpha(0.4f);
+        filterDefaultColors();
+    }
 
-	private void filterDefaultColors() {
-		final List<Paint> lst = new ArrayList<Paint>();
-		lst.addAll(Arrays.asList(DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE));
-		final Iterator<Paint> it = lst.iterator();
-		while (it.hasNext()) {
-			final Color c = (Color) it.next();
-			if (c.equals(Color.lightGray)) {
-				it.remove();
-			}
-		}
-	}
+    private void filterDefaultColors() {
+        final List<Paint> lst = new ArrayList<Paint>();
+        lst.addAll(Arrays.asList(DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE));
+        final Iterator<Paint> it = lst.iterator();
+        while (it.hasNext()) {
+            final Color c = (Color) it.next();
+            if (c.equals(Color.lightGray)) {
+                it.remove();
+            }
+        }
+    }
 
-	private void loadLogo() {
-		try (InputStream imageStream = getClass().getResourceAsStream("/images/bdeLogo.png");) {
-			logo = ImageIO.read(imageStream);
-		} catch (final IOException e) {
-		}
-	}
+    private void loadLogo() {
+        try (InputStream imageStream = getClass().getResourceAsStream("/images/bdeLogo.png");) {
+            logo = ImageIO.read(imageStream);
+        } catch (final IOException e) {
+        }
+    }
 
-	public DateTickUnit getTickUnit() {
-		return tickUnit;
-	}
+    public DateTickUnit getTickUnit() {
+        return tickUnit;
+    }
 
-	public void setTickUnit(final DateTickUnit unit) {
-		this.tickUnit = unit;
-		xAxis.setTickUnit(getTickUnit());
-		if (unit.getUnitType() == DateTickUnitType.DAY) {
-			xAxis.setDateFormatOverride(new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN));
-		} else {
-			xAxis.setDateFormatOverride(new SimpleDateFormat("HH:mm"));
-		}
-	}
+    public void setTickUnit(final DateTickUnit unit) {
+        this.tickUnit = unit;
+        xAxis.setTickUnit(getTickUnit());
+        if (unit.getUnitType() == DateTickUnitType.DAY) {
+            xAxis.setDateFormatOverride(new SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN));
+        } else {
+            xAxis.setDateFormatOverride(new SimpleDateFormat("HH:mm"));
+        }
+    }
 
-	private XYDataset getUpdatedDataSet() {
-		final TimeSeriesCollection dataset = new TimeSeriesCollection();
-		for (final HupeDataSeries series : dataSeries) {
-			if (series.isVisible()) {
-				dataset.addSeries(series.getSeries(dataFilters));
-			}
-		}
-		return dataset;
-	}
+    private XYDataset getUpdatedDataSet() {
+        final TimeSeriesCollection dataset = new TimeSeriesCollection();
+        for (final HupeDataSeries series : dataSeries) {
+            if (series.isVisible()) {
+                dataset.addSeries(series.getSeries(dataFilters));
+            }
+        }
+        return dataset;
+    }
 
-	public JFreeChart getChart() {
-		return chart;
-	}
+    public JFreeChart getChart() {
+        return chart;
+    }
 
-	public void update() {
-		chart.getXYPlot().setDataset(getUpdatedDataSet());
-		chart.setTitle(title);
-		decoratePlot((XYPlot) chart.getPlot());
-	}
+    public void update() {
+        chart.getXYPlot().setDataset(getUpdatedDataSet());
+        chart.setTitle(title);
+        decoratePlot((XYPlot) chart.getPlot());
+    }
 
-	private void decoratePlot(final XYPlot plot) {
-		int i = 0;
-		for (final HupeDataSeries series : dataSeries) {
-			if (series.isVisible()) {
-				series.decoratePlot(i++, plot.getRenderer());
-			}
-		}
-	}
+    private void decoratePlot(final XYPlot plot) {
+        int i = 0;
+        for (final HupeDataSeries series : dataSeries) {
+            if (series.isVisible()) {
+                series.decoratePlot(i++, plot.getRenderer());
+            }
+        }
+    }
 
-	public void clearData() {
-		dataSeries.clear();
-		update();
-	}
+    public void clearData() {
+        dataSeries.clear();
+        update();
+    }
 
-	public void addFilter(final AbstractHupeDataFilter filter) {
-		dataFilters.add(filter);
-	}
+    public void addFilter(final AbstractHupeDataFilter filter) {
+        dataFilters.add(filter);
+    }
 
-	public void setTitle(final String text) {
-		this.title = text;
-	}
+    public void setTitle(final String text) {
+        this.title = text;
+    }
+
+    public void setAutoAdjustedYAxis(boolean value) {
+        yAxis.setAutoRange(value);
+    }
+
+    public void setRangeYAxis(Integer from, Integer until) {
+        yAxis.setLowerBound(from);
+        yAxis.setUpperBound(until);
+    }
 }
